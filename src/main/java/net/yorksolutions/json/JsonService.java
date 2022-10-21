@@ -7,6 +7,7 @@ import org.springframework.web.servlet.HandlerMapping;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -86,12 +87,13 @@ public class JsonService {
         return "alert(\"Your IP address is: " + request.getRemoteAddr() + "\");";
     }
 
-    //7.Cookie
-    public HashMap cookie(HttpServletRequest response){
+    //7.Cookie https://dzone.com/articles/how-to-use-cookies-in-spring-boot
+    public HashMap cookie(HttpServletResponse response){
+
         Date time = new Date();
         String epochTime = String.valueOf(time.getTime());
 
-        Cookie cookie = new Cookie("jsontestdotcom", "ms" + epochTime );
+        Cookie cookie = new Cookie("jsontestdotcom", "ms:" + epochTime );
         response.addCookie(cookie);
 
         HashMap map = new HashMap();
@@ -114,7 +116,7 @@ public class JsonService {
         try {
             //getInstance method is called with hashing MD5
             MessageDigest md = MessageDigest.getInstance("MD5");
-            //digest90 calculates MessageDigest of input digest() return array of byte
+            //digest calculates MessageDigest of input digest() return array of byte
             byte[] messageDigest = md.digest(subPath.getBytes());
             //Convert byte array  into signum representation
             BigInteger no = new BigInteger(1, messageDigest);
