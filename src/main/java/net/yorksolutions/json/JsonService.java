@@ -1,6 +1,7 @@
 package net.yorksolutions.json;
 
 import antlr.StringUtils;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.springframework.stereotype.Service;
@@ -100,23 +101,40 @@ public class JsonService {
     //TODO 5.Validate
     public HashMap validate (String jsonString){
 
+        boolean isArray = jsonString.charAt(0) == '[';
+        int length;
+
         HashMap map = new HashMap<>();
 
         try {
-            var startTime = Instant.now().getNano();
-            JSONObject obj = new JSONObject(jsonString);
-            var endTime = Instant.now().getNano();
+
+            int startTime = Instant.now().getNano();
+
+            if (isArray) {
+                JSONArray jsonArray = new JSONArray(jsonString);
+                length = jsonArray.length();
+            } else {
+                JSONObject jsonObject = new JSONObject(jsonString);
+                length = jsonObject.length();
+            }
+
+            int endTime = Instant.now().getNano();
+
             map.put("validate", true);
-            map.put("size", obj.length());
-            map.put("empty", obj.length() > 0 ? false : true);
-            map.put("object_or_array", jsonString.charAt(0) == '[' ? "array" : "object");
+            map.put("object_or_array", isArray ? "array" : "object");
             map.put("parse_time_nanoseconds", endTime - startTime);
+            map.put("size", length);
+            map.put("empty", length > 0 ? false : true);
+
         } catch (JSONException exception) {
+
             map.put("validate", false);
             map.put("error", exception.getMessage());
-            map.put("object_or_array", jsonString.charAt(0) == '[' ? "array" : "object");
-            map.put("error_info", "This error came from the " + exception.getClass());
-            }
+            map.put("object_or_array", isArray ? "array" : "object");
+            map.put("error info", "This error came from " + exception.getClass());
+
+        }
+
         return map;
         }
 
