@@ -28,6 +28,11 @@ public class JsonController {
         return this.jsonService.getHeaders(headers);
     }
 
+//    @GetMapping("/getheaders")
+//    public HashMap getHeaders(HttpServletRequest request){
+//        return this.jsonService.header(request);
+//    }
+
     //3.Date & Time
     @GetMapping({"/date", "/time"})
     public HashMap currentDate() {
@@ -40,7 +45,11 @@ public class JsonController {
         return this.jsonService.echo(request);
     }
 
-    //5.Validate
+    //TODO 5.Validate
+    @GetMapping("/validate")
+    public HashMap validate (@RequestParam String json){
+        return this.jsonService.validate(json);
+    }
 
     //6.Arbitrary JS Code
     @GetMapping("/code")
@@ -55,9 +64,14 @@ public class JsonController {
     }
 
     //8.MD5
-    @GetMapping("/md5/**")
-    public HashMap getMd(HttpServletRequest request) {
-        return this.jsonService.getMd(request);
+    @GetMapping({"/md5**", "/md5/**"})
+    public HashMap md5(HttpServletRequest request) {
+        return this.jsonService.md5(request);
+    }
+
+    @GetMapping("/getmd5")
+    public HashMap getMd5(@RequestParam String text){
+        return this.jsonService.getMd5(text);
     }
 
 }

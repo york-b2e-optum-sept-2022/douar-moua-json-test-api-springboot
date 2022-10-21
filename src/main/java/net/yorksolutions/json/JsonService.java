@@ -8,14 +8,12 @@ import org.springframework.web.servlet.HandlerMapping;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
 import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.TimeZone;
+import java.util.*;
 
 @Service
 public class JsonService {
@@ -34,12 +32,28 @@ public class JsonService {
 
     //2.HTTP Headers
     public HashMap getHeaders(@RequestHeader Map<String, String> headers){
+
         HashMap headersMap = new HashMap<>();
+
         headers.forEach((key, value) -> {
             headersMap.put(key, value);
         });
+
         return headersMap;
     }
+
+//    public HashMap header(HttpServletRequest request){
+//
+//        HashMap map = new HashMap<>();
+//
+//        Enumeration<String> headerNameList = request.getHeaderNames();
+//        while (headerNameList.hasMoreElements(){
+//            String headerNameKey = headerNameList.nextElement();
+//            String headerDataValue = request.getHeader(headerNameKey);
+//            map.put(headerNameKey, headerDataValue);
+//        }
+//        return map;
+//    }
 
     //3.Date & Time
     public HashMap dateTime(){
@@ -80,7 +94,11 @@ public class JsonService {
         return map;
     }
 
-    //5.Validate
+    //TODO 5.Validate
+    public HashMap validate (String jsonString){
+
+        return new HashMap();
+    }
 
     //6.Arbitrary JS Code
     public String code(HttpServletRequest request){
@@ -103,10 +121,10 @@ public class JsonService {
     }
 
     //8.MD5: https://www.geeksforgeeks.org/md5-hash-in-java/
-    public HashMap getMd(HttpServletRequest request){
+    public HashMap md5(HttpServletRequest request){
 
         String fullPath = (String) request.getAttribute(HandlerMapping.PATH_WITHIN_HANDLER_MAPPING_ATTRIBUTE);
-        String subPath = StringUtils.stripFront(fullPath, "md5/");
+        String subPath = StringUtils.stripFront(fullPath, "/md5");
 
         System.out.println(fullPath);
         System.out.println(subPath);
@@ -134,6 +152,26 @@ public class JsonService {
         }
 
         return mdMap;
+    }
+    public HashMap getMd5(String text){
+
+        HashMap map = new HashMap();
+
+        try {
+            MessageDigest md = MessageDigest.getInstance("MD5");
+            md.update(text.getBytes());
+            byte[] digest = md.digest();
+            String hashValue = DatatypeConverter.printHexBinary(digest).toLowerCase();
+
+            map.put("original", text);
+            map.put("md5", hashValue);
+
+        } catch (NoSuchAlgorithmException exception){
+            System.out.println("Bad request");
+            return new HashMap<>();
+        }
+
+        return map;
     }
 
 
