@@ -1,6 +1,8 @@
 package net.yorksolutions.json;
 
 import antlr.StringUtils;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.servlet.HandlerMapping;
@@ -13,6 +15,7 @@ import java.math.BigInteger;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.*;
 
 @Service
@@ -97,8 +100,25 @@ public class JsonService {
     //TODO 5.Validate
     public HashMap validate (String jsonString){
 
-        return new HashMap();
-    }
+        HashMap map = new HashMap<>();
+
+        try {
+            var startTime = Instant.now().getNano();
+            JSONObject obj = new JSONObject(jsonString);
+            var endTime = Instant.now().getNano();
+            map.put("validate", true);
+            map.put("size", obj.length());
+            map.put("empty", obj.length() > 0 ? false : true);
+            map.put("object_or_array", jsonString.charAt(0) == '[' ? "array" : "object");
+            map.put("parse_time_nanoseconds", endTime - startTime);
+        } catch (JSONException exception) {
+            map.put("validate", false);
+            map.put("error", exception.getMessage());
+            map.put("object_or_array", jsonString.charAt(0) == '[' ? "array" : "object");
+            map.put("error_info", "This error came from the " + exception.getClass());
+            }
+        return map;
+        }
 
     //6.Arbitrary JS Code
     public String code(HttpServletRequest request){
